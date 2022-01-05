@@ -1,0 +1,34 @@
+{
+	"name": "tr-jwt-cli",
+	"version": "0.1.0",
+	"description": "JWT creation and validation CLI tool.",
+	"main": "index.js",
+	"scripts": {
+		"test": "node ./index.js"
+	},
+	"bin": {
+		"jwt-create": "jwt-create.js",
+		"jwt-validate": "jwt-validate.js",
+		"jwt-keygen": "jwt-keygen.js"
+	},
+	"engines": {
+		"node": ">=14.0.0"
+	},
+	"dependencies": {
+		"jsonwebtoken": "^8.5.1",
+		"optist": "^1.0.6",
+		"pem-jwk": "^2.0.0",
+		"uuid": "^8.3.0",
+		"base64url": "^3.0.1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/rinne/node-tr-jwt-cli.git"
+	},
+	"author": {
+		"name": "Timo J. Rinne",
+		"email": "tri@iki.fi",
+		"url": "https://github.com/rinne/"
+	},
+	"license": "GPL-2.0"
+}
