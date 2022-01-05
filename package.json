@@ -1,6 +1,6 @@
 {
 	"name": "tr-jwt-cli",
-	"version": "0.1.0",
+	"version": "0.9.0",
 	"description": "JWT creation and validation CLI tool.",
 	"main": "index.js",
 	"scripts": {
@@ -30,5 +30,24 @@
 		"email": "tri@iki.fi",
 		"url": "https://github.com/rinne/"
 	},
+	"keywords": [
+		"jwt",
+		"json",
+		"encode",
+		"decode",
+		"json-web-token",
+		"base64",
+		"ec",
+		"rsa",
+		"HS256",
+		"HS384",
+		"HS512",
+		"RS256",
+		"RS384",
+		"RS512",
+		"ES256",
+		"ES384",
+		"ES512"
+	],
 	"license": "GPL-2.0"
 }

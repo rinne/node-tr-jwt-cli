@@ -1,7 +1,13 @@
 In a Nutshell
 =============
 
-This is a command line tool for creating and validating JSON Web Tokens (JWT). 
+This is a command line tool for creating and validating JSON Web
+Tokens (JWT).
+
+Public keys (RSA and EC) and shared secrets are supported.
+
+Key generation tool blindly trusts node.js capability to generate
+secure keys. Your mileage may vary.
 
 
 Example
