@@ -5,96 +5,12 @@ const crypto = require('crypto');
 const fs = require('fs');
 const Optist = require('optist');
 const ou = require('optist/util');
-
-const jwtKeyParams = {
-	'RS256': {
-		type: 'rsa',
-		options: {
-			modulusLength: 2048,
-			publicKeyEncoding: {
-				type: 'pkcs1',
-				format: 'pem'
-			},
-			privateKeyEncoding: {
-				type: 'pkcs1',
-				format: 'pem'
-			}
-		}
-	},
-	'RS384': {
-		type: 'rsa',
-		options: {
-			modulusLength: 3072,
-			publicKeyEncoding: {
-				type: 'pkcs1',
-				format: 'pem'
-			},
-			privateKeyEncoding: {
-				type: 'pkcs1',
-				format: 'pem'
-			}
-		}
-	},
-	'RS512': {
-		type: 'rsa',
-		options: {
-			modulusLength: 4096,
-			publicKeyEncoding: {
-				type: 'pkcs1',
-				format: 'pem'
-			},
-			privateKeyEncoding: {
-				type: 'pkcs1',
-				format: 'pem'
-			}
-		}
-	},
-	'ES256': {
-		type: 'ec',
-		options: {
-			namedCurve: 'secp256k1',
-			publicKeyEncoding: {
-				type: 'spki',
-				format: 'pem'
-			},
-			privateKeyEncoding: {
-				type: 'sec1',
-				format: 'pem'
-			}
-		}
-	},
-	'ES384': {
-		type: 'ec',
-		options: {
-			namedCurve: 'secp384r1',
-			publicKeyEncoding: {
-				type: 'spki',
-				format: 'pem'
-			},
-			privateKeyEncoding: {
-				type: 'sec1',
-				format: 'pem'
-			}
-		}
-	},
-	'ES512': {
-		type: 'ec',
-		options: {
-			namedCurve: 'secp521r1',
-			publicKeyEncoding: {
-				type: 'spki',
-				format: 'pem'
-			},
-			privateKeyEncoding: {
-				type: 'sec1',
-				format: 'pem'
-			}
-		}
-	}
-};
+const readKeyFile = require('./read-key-file.js');
+const jwtKeyParams = require('./data-jwt-key-params.js');
 
 var opt = ((new Optist())
 		   .opts([ { longName: 'jwt-algorithm',
+					 shortName: 'a',
 					 description: 'JWT algorithm for the key pair.',
 					 hasArg: true,
 					 required: true,
@@ -113,6 +29,9 @@ var opt = ((new Optist())
 function genJwtKeyPair(jwtAlg) {
 	if (! jwtKeyParams[jwtAlg]) {
 		return Promise.reject(new Error('Unsupported JWT algorithm'));
+	}
+	if (! jwtKeyParams[jwtAlg].type) {
+		return Promise.reject(new Error('JWT algorithm not a public key type'));
 	}
 	return new Promise(function(resolve, reject) {
 		crypto.generateKeyPair(jwtKeyParams[jwtAlg].type,
@@ -147,6 +66,8 @@ function writeFile(fn, data, options) {
 		await writeFile(opt.value('output') + '.pub',
 						k.publicKey,
 						{ encoding: 'utf8',  mode: 0o644, flag: 'wx' });
+		readKeyFile(opt.value('output'), true);
+		readKeyFile(opt.value('output') + '.pub', false);
 	} catch (e) {
 		console.log(e);
 		process.exit(1);

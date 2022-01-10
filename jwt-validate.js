@@ -4,10 +4,12 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
-const jwk = require('pem-jwk');
 const Optist = require('optist');
 const ou = require('optist/util');
 const base64url = require('base64url');
+const readKeyFile = require('./read-key-file.js');
+const getEcCurveName = require('./get-ec-curve-name.js');
+const jwtKeyParams = require('./data-jwt-key-params.js');
 
 const parseJwtToken = require('./parse-jwt-token.js');
 const unixTimeToUtcString = require('./unix-time-to-utc-string.js');
@@ -52,13 +54,21 @@ var opt = ((new Optist())
 		   .opts([ { longName: 'public-key-file',
 					 description: 'Read token signature public key from file.',
 					 hasArg: true,
-					 optArgCb: ou.fileContentsStringCb,
+					 optArgCb: ou.existingFileNameCb,
 					 conflictsWith: [ 'secret' ] },
 				   { longName: 'secret',
 					 description: 'Symmetric token signing secret.',
 					 hasArg: true,
 					 optArgCb: ou.nonEmptyCb,
 					 conflictsWith: [ 'public-key-file' ] },
+				   { longName: 'jwt-algorithm',
+					 shortName: 'a',
+					 multi: true,
+					 description: 'Accept only a given JWT algorithm.',
+					 hasArg: true,
+					 optArgCb: ou.allowListCbFactory(Object.keys(jwtKeyParams)) },
+				   { longName: 'strict',
+					 description: 'Be strict!' },
 				   { longName: 'verbose',
 					 shortName: 'v',
 					 description: 'Enable verbose output.' },
@@ -71,58 +81,62 @@ var opt = ((new Optist())
 
 (async function() {
 	context.verbose = opt.value('verbose');
-	if (opt.value('public-key-file')) {
-		[ { format: 'pem' },
-		  { format: 'jwk' },
-		  { format: 'der', type: 'pkcs1' },
-		  { format: 'der', type: 'spki' }].some(function(opts) {
-			  try {
-				  context.jwtConf.publicKey = crypto.createPublicKey(
-					  { key: opt.value('public-key-file'),
-						type: opts.type,
-						format: opts.format });
-			  } catch (e) {
-				  context.jwtConf.publicKey = undefined;
-			  }
-			  return !!context.jwtConf.publicKey;
-		  });
-		if (! context.jwtConf.publicKey) {
-			console.log('Unable to read key file');
-			process.exit(1);
-		}
-		if (! ((context.jwtConf.publicKey.type === 'public') &&
-			   ((context.jwtConf.publicKey.asymmetricKeyType === 'rsa') ||
-				(context.jwtConf.publicKey.asymmetricKeyType === 'ec')))) {
-			console.log('Unexpected key type');
-			process.exit(1);
-		}
-		switch (context.jwtConf.publicKey.asymmetricKeyType) {
-		case 'rsa':
-			context.jwtConf.publicKeyDer =
-				context.jwtConf.publicKey.export({ type: 'pkcs1', format: 'der' });
-			context.jwtConf.publicKeyPem =
-				context.jwtConf.publicKey.export({ type: 'pkcs1', format: 'pem' });
-			context.jwtConf.publicKeyJwk = jwk.pem2jwk(context.jwtConf.publicKeyPem);
-			if (! (context.jwtConf.publicKeyJwk.kty === 'RSA')) {
-				console.log('Unexpected key type');
-				process.exit(1);
-			}
-			context.jwtConf.algorithms = [ 'RS256', 'RS384', 'RS512' ];
-			break;
-		case 'ec':
+	context.strict = opt.value('strict');
+	try {
+		if (opt.value('public-key-file')) {
+			let k = readKeyFile(opt.value('public-key-file'), false);
+			context.jwtConf.secretKey = k.secretKey;
+			context.jwtConf.publicKey = k.publicKey;
 			context.jwtConf.publicKeyDer =
 				context.jwtConf.publicKey.export({ type: 'spki', format: 'der' });
 			context.jwtConf.publicKeyPem =
 				context.jwtConf.publicKey.export({ type: 'spki', format: 'pem' });
-			context.jwtConf.algorithms = [ 'ES256', 'ES384', 'ES512' ];
-			context.jwtConf.publicKeyJwk = { kty: 'EC' };
-			break;
+			switch (context.jwtConf.publicKey.asymmetricKeyType) {
+			case 'rsa':
+				context.jwtConf.algorithms = [ 'RS256', 'RS384', 'RS512' ];
+				if (! context.strict) {
+					context.jwtConf.algorithms.push('PS256', 'PS384', 'PS512');
+				}
+				break;
+			case 'rsa-pss':
+				context.jwtConf.algorithms = [ 'PS256', 'PS384', 'PS512' ];
+				if (! context.strict) {
+					context.jwtConf.algorithms.push('RS256', 'RS384', 'RS512');
+				}
+				break;
+			case 'ec':
+				let cn = getEcCurveName(context.jwtConf.publicKey);
+				Object.keys(jwtKeyParams).some(function(a) {
+					if ((jwtKeyParams[a].type === 'ec') &&
+						(!!jwtKeyParams[a].options) &&
+						(jwtKeyParams[a].options.namedCurve === cn)) {
+						context.jwtConf.algorithms = [ a ];
+						return true;
+					}
+					return false;
+				});
+				if (! context.jwtConf.algorithms) {
+					throw new Error('Unexpected EC key type');
+				}
+				break;
+			default:
+				throw new Error('Unexpected key type');
+			}
+		} else if (opt.value('secret')) {
+			context.jwtConf.secret = opt.value('secret');
+			context.jwtConf.algorithms = [ 'HS256', 'HS384', 'HS512' ];
+		} else {
+			throw new Error('Either public key or secret is required.');
 		}
-	} else if (opt.value('secret')) {
-		context.jwtConf.secret = opt.value('secret');
-		context.jwtConf.algorithms = [ 'HS256', 'HS384', 'HS512' ];
-	} else {
-		console.log('Either public key or secret is required.');
+		if (opt.value('jwt-algorithm').length > 0) {
+			context.jwtConf.algorithms = context.jwtConf.algorithms.filter(function(a) {
+				return (opt.value('jwt-algorithm').indexOf(a) >= 0); });
+		}
+		if (context.jwtConf.algorithms.length < 1) {
+			throw new Error('Allowed algorithms mismatch with key');
+		}
+	} catch (e) {
+		console.log(e.message);
 		process.exit(1);
 	}
 	try {
