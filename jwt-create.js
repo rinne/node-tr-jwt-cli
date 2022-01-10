@@ -179,6 +179,8 @@ var opt = ((new Optist())
 						   (!!jwtKeyParams[a].options) &&
 						   (jwtKeyParams[opt.value('jwt-algorithm')].options.namedCurve === cn)) {
 					context.jwtConf.algorithm = opt.value('jwt-algorithm');
+				} else {
+					throw new Error('JWT algorithm EC key mismatch');
 				}
 				break;
 			}
