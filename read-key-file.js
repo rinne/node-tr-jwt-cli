@@ -34,7 +34,7 @@ function readKeyFile(filename, secret) {
 						format: opts.format });
 				  if (! ((pk && pk.type === 'public') &&
 						 ((sk && sk.type === 'private') || (! secret)))) {
-					  
+					  throw new Error('Unable to parse key file');
 				  }
 				  r = {};
 				  r.publicKey = pk;
