@@ -111,11 +111,15 @@ var opt = ((new Optist())
 					if (context.jwtConf.publicKey.asymmetricKeyDetails) {
 						ml = context.jwtConf.publicKey.asymmetricKeyDetails.modulusLength;
 					} else {
-						// Not exact but good enough for node < 16;
-						ml = Buffer.from(context.jwtConf.publicKeyJwk.n, 'base64').length * 8;
+						let b = Buffer.from(context.jwtConf.publicKeyJwk.n, 'base64');
+						if (b.length > 0) {
+							ml = (b.length * 8) - (8 - Math.ceil(Math.log(b[0]+1) / Math.LN2));
+						}
 					}
-					if (ml < 256) {
-						throw new Error('Bad key');
+					if (! ml) {
+						throw new Error('Unable to extract RSA key modulus length');
+					} else if (ml < 256) {
+						throw new Error('Insufficient RSA key modulus length');
 					} else if (ml <= 2048) {
 						context.jwtConf.algorithm = 'RS256';
 					} else if (ml < 4096) {
@@ -139,11 +143,15 @@ var opt = ((new Optist())
 					if (context.jwtConf.publicKey.asymmetricKeyDetails) {
 						ml = context.jwtConf.publicKey.asymmetricKeyDetails.modulusLength;
 					} else {
-						// Not exact but good enough for node < 16;
-						ml = Buffer.from(context.jwtConf.publicKeyJwk.n, 'base64').length * 8;
+						let b = Buffer.from(context.jwtConf.publicKeyJwk.n, 'base64');
+						if (b.length > 0) {
+							ml = (b.length * 8) - (8 - Math.ceil(Math.log(b[0]+1) / Math.LN2));
+						}
 					}
-					if (ml < 256) {
-						throw new Error('Bad key');
+					if (! ml) {
+						throw new Error('Unable to extract RSA key modulus length');
+					} else if (ml < 256) {
+						throw new Error('Insufficient RSA key modulus length');
 					} else if (ml <= 2048) {
 						context.jwtConf.algorithm = 'PS256';
 					} else if (ml < 4096) {
