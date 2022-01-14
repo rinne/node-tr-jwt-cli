@@ -71,7 +71,7 @@ var opt = ((new Optist())
 					 optArgCb: ou.nonEmptyCb },
 				   { longName: 'skip-validation',
 					 description: 'Do not validate the created token.' },
-				   { longName: 'secret-key-file',
+				   { longName: 'private-key-file',
 					 description: 'Read token signing key from file.',
 					 hasArg: true,
 					 optArgCb: ou.existingFileNameCb,
@@ -80,7 +80,7 @@ var opt = ((new Optist())
 					 description: 'Symmetric secret for token signing.',
 					 hasArg: true,
 					 optArgCb: ou.nonEmptyCb,
-					 conflictsWith: [ 'secret-key-file' ] },
+					 conflictsWith: [ 'private-key-file' ] },
 				   { longName: 'verbose',
 					 shortName: 'v',
 					 description: 'Enable verbose output.' } ])
@@ -94,10 +94,10 @@ var opt = ((new Optist())
 	context.jwtConf.subject = opt.value('token-issuer');
 	context.jwtConf.ttl = opt.value('token-ttl');
 	context.jwtConf.validate = !opt.value('skip-validation');
-	if (opt.value('secret-key-file')) {
+	if (opt.value('private-key-file')) {
 		try {
-			let k = readKeyFile(opt.value('secret-key-file'), true);
-			context.jwtConf.secretKey = k.secretKey;
+			let k = readKeyFile(opt.value('private-key-file'), true);
+			context.jwtConf.privateKey = k.privateKey;
 			context.jwtConf.publicKey = k.publicKey;
 			context.jwtConf.publicKeyDer =
 				context.jwtConf.publicKey.export({ type: 'spki', format: 'der' });
@@ -230,7 +230,7 @@ var opt = ((new Optist())
 			throw new Error('JWT algorithm incompatible with shared secret');
 		}
 	} else {
-		console.error('Either secret key or secret is required.');
+		console.error('Either private key or secret is required.');
 		process.exit(1);
 	}
 	if (opt.value('token-key-id')) {
@@ -253,7 +253,7 @@ var opt = ((new Optist())
 		let t = jwt.sign(a,
 						 (context.jwtConf.secret ?
 						  context.jwtConf.secret :
-						  context.jwtConf.secretKey),
+						  context.jwtConf.privateKey),
 						 { algorithm: context.jwtConf.algorithm } );
 		if (! t) {
 			throw new Error('token creation failed');

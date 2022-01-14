@@ -39,7 +39,7 @@ function readKeyFile(filename, secret) {
 				  r = {};
 				  r.publicKey = pk;
 				  if (secret) {
-					  r.secretKey = sk;
+					  r.privateKey = sk;
 				  }
 			  } catch (e) {
 				  r = undefined;

@@ -85,7 +85,6 @@ var opt = ((new Optist())
 	try {
 		if (opt.value('public-key-file')) {
 			let k = readKeyFile(opt.value('public-key-file'), false);
-			context.jwtConf.secretKey = k.secretKey;
 			context.jwtConf.publicKey = k.publicKey;
 			context.jwtConf.publicKeyDer =
 				context.jwtConf.publicKey.export({ type: 'spki', format: 'der' });
