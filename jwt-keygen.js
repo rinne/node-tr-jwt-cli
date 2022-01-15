@@ -14,7 +14,10 @@ var opt = ((new Optist())
 					 description: 'JWT algorithm for the key pair.',
 					 hasArg: true,
 					 required: true,
-					 optArgCb: ou.allowListCbFactory(Object.keys(jwtKeyParams)) },
+					 optArgCb: (ou.allowListCbFactory(Object.keys(jwtKeyParams)
+													  .filter(function(a) {
+														  return !!(jwtKeyParams[a].type);
+													  } ))) },
 				   { longName: 'output',
 					 description: 'Filename for the secret key.',
 					 hasArg: true,
