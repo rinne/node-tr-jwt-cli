@@ -12,8 +12,8 @@ RS512, PS256, PS384, PS512, ES256, ES384, and ES512.
 Reference
 =========
 
-jwt-keygen \[<opt> ...\]
-------------------------
+jwt-keygen \[\<opt\> ...\]
+--------------------------
 
 Generate a key pair to be used with JWT tokens. Keys generated with
 other tools, such as `openssl`, can be used with these tools. A tool
@@ -44,8 +44,8 @@ is written to the file with `.pub` suffix.
 ```
 
 
-jwt-create  \[<opt> ...\]
--------------------------
+jwt-create  \[\<opt\> ...\]
+---------------------------
 
 Create a JWT token either using a private key or a shared secret to
 sign the token.  In most cases, the JWT algorithm to be used, is
@@ -73,8 +73,8 @@ token as a numeric type.
   -h        --help                    Show help and exit
 ```
 
-jwt-validate  \[<opt> ...\]
----------------------------
+jwt-validate  \[\<opt\> ...\]
+-----------------------------
 
 Validate a JWT token. If no token is passed as a command line
 parameter, the program reads it from the standard input. With verbose
