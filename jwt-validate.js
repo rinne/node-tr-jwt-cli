@@ -7,10 +7,11 @@ const jwt = require('jsonwebtoken');
 const Optist = require('optist');
 const ou = require('optist/util');
 const base64url = require('base64url');
+const lou = require('./local-optist-utils.js');
 const readKeyFile = require('./read-key-file.js');
 const getEcCurveName = require('./get-ec-curve-name.js');
 const jwtKeyParams = require('./data-jwt-key-params.js');
-
+const readProcessInput = require('./read-process-input.js');
 const parseJwtToken = require('./parse-jwt-token.js');
 const unixTimeToUtcString = require('./unix-time-to-utc-string.js');
 
@@ -21,46 +22,22 @@ var context = {
 	tokenData: null
 };
 
-function readProcessInput() {
-	return new Promise(function(resolve, reject) {
-		let r = '';
-		let completed = false;
-		process.stdin.setEncoding('utf-8');
-		process.stdin.on('data', function(d) {
-			if (completed) {
-				return;
-			}
-			r += d;
-				
-		});
-		process.stdin.on('end', function() {
-			if (completed) {
-				return;
-			}
-			completed = true;
-			resolve(r);
-		});
-		process.stdin.on('error', function() {
-			if (completed) {
-				return;
-			}
-			completed = true;
-			reject(new Error('Unable to read input'));
-		});
-	});
-}
-
 var opt = ((new Optist())
 		   .opts([ { longName: 'public-key-file',
 					 description: 'Read token signature public key from file.',
 					 hasArg: true,
 					 optArgCb: ou.existingFileNameCb,
-					 conflictsWith: [ 'secret' ] },
+					 conflictsWith: [ 'secret', 'secret-hex' ] },
 				   { longName: 'secret',
 					 description: 'Symmetric token signing secret.',
 					 hasArg: true,
 					 optArgCb: ou.nonEmptyCb,
-					 conflictsWith: [ 'public-key-file' ] },
+					 conflictsWith: [ 'secret-hex', 'public-key-file' ] },
+				   { longName: 'secret-hex',
+					 description: 'Symmetric secret for token signing in hexadecimal.',
+					 hasArg: true,
+					 optArgCb: lou.hexBufCb,
+					 conflictsWith: [ 'secret', 'public-key-file' ] },
 				   { longName: 'jwt-algorithm',
 					 shortName: 'a',
 					 multi: true,
@@ -82,6 +59,11 @@ var opt = ((new Optist())
 (async function() {
 	context.verbose = opt.value('verbose');
 	context.strict = opt.value('strict');
+	if (opt.value('secret')) {
+		context.jwtConf.secret = opt.value('secret');
+	} else if (opt.value('secret-hex')) {
+		context.jwtConf.secret = opt.value('secret-hex');
+	}
 	try {
 		if (opt.value('public-key-file')) {
 			let k = readKeyFile(opt.value('public-key-file'), false);
@@ -121,8 +103,7 @@ var opt = ((new Optist())
 			default:
 				throw new Error('Unexpected key type');
 			}
-		} else if (opt.value('secret')) {
-			context.jwtConf.secret = opt.value('secret');
+		} else if (context.jwtConf.secret) {
 			context.jwtConf.algorithms = [ 'HS256', 'HS384', 'HS512' ];
 		} else {
 			throw new Error('Either public key or secret is required.');
@@ -158,6 +139,41 @@ var opt = ((new Optist())
 									   { algorithms: context.jwtConf.algorithms } );
 		if (! context.tokenData) {
 			throw new Error('Invalid token');
+		}
+		// jwt.verify has already done mandatory checks and failed with non-valid token.
+		if (context.strict) {
+			if ('exp' in context.tokenData) {
+				if (! Number.isSafeInteger(context.tokenData.exp)) {
+					throw new Error('Expiration time not a number in strict mode');
+				}
+				if (context.tokenData.exp >
+					(Math.floor(Date.now() / 1000) + (10 * 365.25 * 24 * 60 * 60))) {
+					throw new Error('Expiration time over 10 years in strict mode');
+				}
+			} else {
+				throw new Error('Expiration time missing in strict mode');
+			}
+			if ('nbf' in context.tokenData) {
+				if (! Number.isSafeInteger(context.tokenData.exp)) {
+					throw new Error('Not before time not a number in strict mode');
+				}
+			}
+			if ('iat' in context.tokenData) {
+				if (! Number.isSafeInteger(context.tokenData.iat)) {
+					throw new Error('Issue time not a number in strict mode');
+				}
+				if (context.tokenData.iat > Math.floor(Date.now() / 1000)) {
+					throw new Error('Issue time in future in strict mode');
+				}
+			}
+			['iss', 'aud', 'prn', 'jti',  'typ'].forEach(function(p) {
+				if (p in context.tokenData) {
+					if (typeof(context.tokenData[p]) !== 'string') {
+						let m = 'Reserved property "' + p + '" not a string in strict mode';
+						throw new Error(m);
+					}
+				}
+			});
 		}
 	} catch (e) {
 		context.tokenData = null;

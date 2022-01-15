@@ -9,7 +9,8 @@
 	"bin": {
 		"jwt-create": "jwt-create.js",
 		"jwt-validate": "jwt-validate.js",
-		"jwt-keygen": "jwt-keygen.js"
+		"jwt-keygen": "jwt-keygen.js",
+		"jwt-parse": "jwt-parse.js"
 	},
 	"engines": {
 		"node": ">=14.0.0"

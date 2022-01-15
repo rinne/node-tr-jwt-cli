@@ -81,6 +81,7 @@ as `--token-issuer` or `--token-ttl`.
           --skip-validation               Do not validate the created token.
           --private-key-file=<arg>        Read token signing key from file.
           --secret=<arg>                  Symmetric secret for token signing.
+          --secret-hex=<arg>              Symmetric secret for token signing in hexadecimal.
 -v        --verbose                       Enable verbose output.
 -h        --help                          Show help and exit
 ```
@@ -99,11 +100,32 @@ does not validate.
 ```
           --public-key-file=<arg>  Read token signature public key from file.
           --secret=<arg>           Symmetric token signing secret.
+          --secret-hex=<arg>       Symmetric secret for token signing in hexadecimal.
 -a <arg>  --jwt-algorithm=<arg>    Accept only a given JWT algorithm.
           --strict                 Be strict!
 -v        --verbose                Enable verbose output.
           --token=<arg>            Token to be verified.
 -h        --help                   Show help and exit
+```
+
+jwt-parse  \[\<opt\> ...\]
+--------------------------
+
+Parse a JWT token. If no token is passed as a command line
+parameter, the program reads it from the standard input.
+
+### Caution!
+
+This command only parses and prints the token contents. It does not
+check the token signature nor does it do any contextual validation at
+all. It is strictly a debugging tool.
+
+### Options
+
+```
+-v  --verbose        Enable verbose output.
+    --token=<arg>    Token to be parsed.
+-h  --help           Show help and exit
 ```
 
 Examples

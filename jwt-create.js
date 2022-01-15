@@ -9,6 +9,7 @@ const Optist = require('optist');
 const ou = require('optist/util');
 const uuidv4 = require('uuid').v4;
 const base64url = require('base64url');
+const lou = require('./local-optist-utils.js');
 const readKeyFile = require('./read-key-file.js');
 const parseJwtToken = require('./parse-jwt-token.js');
 const getEcCurveName = require('./get-ec-curve-name.js');
@@ -21,24 +22,6 @@ var context = {
 	token: null,
 	tokenData: null
 };
-
-function nameValuePairCb(s) {
-	let m = s.match(/^([^:=]+)([:=])(.*)$/);
-	if (! m) {
-		return undefined;
-	}
-	if (m[2] === ':') {
-		return { name: m[1], value: m[3] };
-	}
-	if (m[2] === '=') {
-		let i = Number.parseInt(m[3]);
-		if (! (Number.isFinite(i) && (i.toString() === m[3]))) {
-			return undefined;
-		}
-		return { name: m[1], value: i };
-	}
-	return undefined;
-}
 
 var opt = ((new Optist())
 		   .opts([ { longName: 'jwt-algorithm',
@@ -65,7 +48,7 @@ var opt = ((new Optist())
 					 description: 'Extra name:value pair to be included into tokens.',
 					 hasArg: true,
 					 multi: true,
-					 optArgCb: nameValuePairCb },
+					 optArgCb: lou.nameValuePairCb },
 				   { longName: 'exclude-token-property',
 					 description: 'Exclude property from the token before signing.',
 					 hasArg: true,
@@ -81,12 +64,17 @@ var opt = ((new Optist())
 					 description: 'Read token signing key from file.',
 					 hasArg: true,
 					 optArgCb: ou.existingFileNameCb,
-					 conflictsWith: [ 'secret' ] },
+					 conflictsWith: [ 'secret', 'secret-hex' ] },
 				   { longName: 'secret',
 					 description: 'Symmetric secret for token signing.',
 					 hasArg: true,
 					 optArgCb: ou.nonEmptyCb,
-					 conflictsWith: [ 'private-key-file' ] },
+					 conflictsWith: [ 'secret-hex', 'private-key-file' ] },
+				   { longName: 'secret-hex',
+					 description: 'Symmetric secret for token signing in hexadecimal.',
+					 hasArg: true,
+					 optArgCb: lou.hexBufCb,
+					 conflictsWith: [ 'secret', 'private-key-file' ] },
 				   { longName: 'verbose',
 					 shortName: 'v',
 					 description: 'Enable verbose output.' } ])
@@ -101,6 +89,11 @@ var opt = ((new Optist())
 	context.jwtConf.subject = opt.value('token-issuer');
 	context.jwtConf.ttl = opt.value('token-ttl');
 	context.jwtConf.validate = !opt.value('skip-validation');
+	if (opt.value('secret')) {
+		context.jwtConf.secret = opt.value('secret');
+	} else if (opt.value('secret-hex')) {
+		context.jwtConf.secret = opt.value('secret-hex');
+	}
 	if (opt.value('private-key-file')) {
 		try {
 			let k = readKeyFile(opt.value('private-key-file'), true);
@@ -211,9 +204,8 @@ var opt = ((new Optist())
 			console.error('Invalid private key: ' + e.message);
 			process.exit(1);
 		}
-	} else if (opt.value('secret')) {
+	} else if (context.jwtConf.secret) {
 		if (! opt.value('jwt-algorithm')) {
-			context.jwtConf.secret = opt.value('secret');
 			if (context.jwtConf.secret.length <= 32) {
 				context.jwtConf.algorithm = 'HS256';
 				context.jwtConf.hashName = 'sha256';
