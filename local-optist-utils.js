@@ -1,21 +1,31 @@
 'use strict';
 
 function nameValuePairCb(s) {
-	let m = s.match(/^([^:=]+)([:=])(.*)$/);
+	let name, separator, value;
+	let m = s.match(/^([^:=+]+)(:|=|@)(.*)$/);
 	if (! m) {
 		return undefined;
 	}
-	if (m[2] === ':') {
-		return { name: m[1], value: m[3] };
-	}
-	if (m[2] === '=') {
-		let i = Number.parseInt(m[3]);
-		if (! (Number.isFinite(i) && (i.toString() === m[3]))) {
+	name = m[1];
+	separator = m[2];
+	switch (separator) {
+	case ':':
+		value = m[3];
+		break;
+	case '=':
+	case '@':
+		value = Number.parseInt(m[3]);
+		if (! (Number.isFinite(value) && (value.toString() === m[3]))) {
 			return undefined;
 		}
-		return { name: m[1], value: i };
+		if (separator === '@') {
+			value += Math.floor(Date.now() / 1000)
+		}
+		break;
+	default:
+		return undefined;
 	}
-	return undefined;
+	return { name: name, value: value };
 }
 
 function hexBufCb(s) {

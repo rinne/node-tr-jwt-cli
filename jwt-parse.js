@@ -48,18 +48,15 @@ var opt = ((new Optist())
 	console.log('token signature blob length: ' + context.tokenSignatureLength + ' bytes');
 	if (Number.isSafeInteger(context.tokenPayloadData.iat)) {
 		console.log('issued: ' +
-					unixTimeToUtcString(context.tokenPayloadData.iat) +
-					' UTC');
+					unixTimeToUtcString(context.tokenPayloadData.iat));
 	}
 	if (Number.isSafeInteger(context.tokenPayloadData.nbf)) {
 		console.log('valid not before: ' +
-					unixTimeToUtcString(context.tokenPayloadData.nbf) +
-					' UTC');
+					unixTimeToUtcString(context.tokenPayloadData.nbf));
 	}
 	if (Number.isSafeInteger(context.tokenPayloadData.exp)) {
 		console.log('expiration time: ' +
-					unixTimeToUtcString(context.tokenPayloadData.exp) +
-					' UTC');
+					unixTimeToUtcString(context.tokenPayloadData.exp));
 	}
 	if (typeof(context.tokenPayloadData.iss) === 'string') {
 		console.log('issuer: ' + context.tokenPayloadData.iss);

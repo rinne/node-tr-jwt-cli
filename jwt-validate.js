@@ -148,10 +148,13 @@ var opt = ((new Optist())
 				}
 				if (context.tokenData.exp >
 					(Math.floor(Date.now() / 1000) + (10 * 365.25 * 24 * 60 * 60))) {
-					throw new Error('Expiration time over 10 years in strict mode');
+					throw new Error('Expiration time over 10 years in future in strict mode');
 				}
 			} else {
 				throw new Error('Expiration time missing in strict mode');
+			}
+			if (! (('nbf' in context.tokenData) || ('iss' in context.tokenData))) {
+				throw new Error('Issue and not before times are both missing in strict mode');
 			}
 			if ('nbf' in context.tokenData) {
 				if (! Number.isSafeInteger(context.tokenData.exp)) {
@@ -164,6 +167,30 @@ var opt = ((new Optist())
 				}
 				if (context.tokenData.iat > Math.floor(Date.now() / 1000)) {
 					throw new Error('Issue time in future in strict mode');
+				}
+			}
+			if (('exp' in context.tokenData) && ('iat' in context.tokenData)) {
+				if (context.tokenData.iat > context.tokenData.exp) {
+					throw new Error('Issue time after expiration in strict mode');
+				}
+				if ((context.tokenData.exp - context.tokenData.iat) >
+					(10 * 365.25 * 24 * 60 * 60)) {
+					throw new Error('Expiration time over 10 years after issue time in strict mode');
+				}
+			}
+			if (('exp' in context.tokenData) && ('iat' in context.tokenData)) {
+				if (context.tokenData.iat > context.tokenData.exp) {
+					throw new Error('Issue time after expiration in strict mode');
+				}
+				if ((context.tokenData.exp - context.tokenData.iat) >
+					(10 * 365.25 * 24 * 60 * 60)) {
+					throw new Error('Expiration time over 10 years after issue time in strict mode');
+				}
+			}
+			if (('exp' in context.tokenData) && ('nbf' in context.tokenData)) {
+				if ((context.tokenData.exp - context.tokenData.nbf) >
+					(10 * 365.25 * 24 * 60 * 60)) {
+					throw new Error('Validity period over 10 years in strict mode');
 				}
 			}
 			['iss', 'aud', 'prn', 'jti',  'typ'].forEach(function(p) {
