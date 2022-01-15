@@ -46,5 +46,32 @@ var opt = ((new Optist())
 	console.log('token payload: ' +
 				JSON.stringify(context.tokenPayloadData, null, 2));
 	console.log('token signature blob length: ' + context.tokenSignatureLength + ' bytes');
+	if (Number.isSafeInteger(context.tokenPayloadData.iat)) {
+		console.log('issued: ' +
+					unixTimeToUtcString(context.tokenPayloadData.iat) +
+					' UTC');
+	}
+	if (Number.isSafeInteger(context.tokenPayloadData.nbf)) {
+		console.log('valid not before: ' +
+					unixTimeToUtcString(context.tokenPayloadData.nbf) +
+					' UTC');
+	}
+	if (Number.isSafeInteger(context.tokenPayloadData.exp)) {
+		console.log('expiration time: ' +
+					unixTimeToUtcString(context.tokenPayloadData.exp) +
+					' UTC');
+	}
+	if (typeof(context.tokenPayloadData.iss) === 'string') {
+		console.log('issuer: ' + context.tokenPayloadData.iss);
+	}
+	if (typeof(context.tokenPayloadData.sub) === 'string') {
+		console.log('subject: ' + context.tokenPayloadData.sub);
+	}
+	if (typeof(context.tokenPayloadData.aud) === 'string') {
+		console.log('audience: ' + context.tokenPayloadData.aud);
+	}
+	if (typeof(context.tokenPayloadData.jti) === 'string') {
+		console.log('jwt id: ' + context.tokenPayloadData.jti);
+	}
 	process.exit();
 })();
