@@ -31,7 +31,6 @@ var opt = ((new Optist())
 		context.verbose = opt.value('verbose');
 		let t = opt.value('token') ? opt.value('token') : await readProcessInput();
 		let d = parseJwtToken(t);
-		console.log(d);
 		if (! (d && d.tokenHeaderData && d.tokenPayloadData && d.tokenSignatureRaw && (! d.errors))) {
 			throw new Error('Invalid token format');
 		}
