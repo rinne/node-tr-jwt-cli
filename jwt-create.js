@@ -258,7 +258,11 @@ var opt = ((new Optist())
 			a[p.name] = p.value;
 		});
 		context.jwtConf.excludeProperty.forEach(function(p) {
-			delete a[p];
+			if (p === '*') {
+				a = {};
+			} else {
+				delete a[p];
+			}
 		});
 		let t = createJwt(context.jwtConf.algorithm,
 						  (context.jwtConf.secret ?

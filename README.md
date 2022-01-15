@@ -57,6 +57,17 @@ of the properties with a semicolon sign are handled as strings whereas
 values with an equals sign are integers and are also included into the
 token as a numeric type.
 
+Removing properties from the token payload using
+`--exclude-token-property`, may result a token that does not validate
+properly. Option `--exclude-token-property=*` removes all payload
+properties from the created token effectively creating a token with
+empty object `{}` as payload.  This may be useful for testing in some
+cases, but should never be used in production use. Option
+`--exclude-token-property` is applied just before token signing, so it
+will potentially exclude also properties explicitly added using
+`--token-property` or other options adjusting the token payload, such
+as `--token-issuer` or `--token-ttl`.
+
 ### Options
 
 ```
