@@ -53,24 +53,25 @@ automatically derived from the key.
 
 Token property-value pairs passed with option `--token-property` can
 be separated either with an equals sign `=` or a semicolon `:`. Values
-of the properties with an equals sign are handled as strings whereas
-values with a semicolon are integers and are also included into the
+of the properties with a semicolon sign are handled as strings whereas
+values with an equals sign are integers and are also included into the
 token as a numeric type.
 
 ### Options
 
 ```
--a <arg>  --jwt-algorithm=<arg>     Force JWT algorithm to be used.
-          --token-ttl=<arg>         Default validity time for tokens in seconds.
-          --token-issuer=<arg>      Issuer name to be included into tokens.
-          --token-subject=<arg>     Subject name to be included into tokens.
-          --token-property=<arg>    Extra name:value pair to be included into a token.
-          --token-key-id=<arg>      Override key-id in token.
-          --skip-validation         Do not validate the created token.
-          --private-key-file=<arg>  Read token signing key from file.
-          --secret=<arg>            Symmetric secret for token signing.
--v        --verbose                 Enable verbose output.
--h        --help                    Show help and exit
+-a <arg>  --jwt-algorithm=<arg>           Force JWT algorithm to be used.
+          --token-ttl=<arg>               Default validity time for tokens in seconds.
+          --token-issuer=<arg>            Issuer name to be included into tokens.
+          --token-subject=<arg>           Subject name to be included into tokens.
+          --token-property=<arg>          Extra name:value pair to be included into tokens.
+          --exclude-token-property=<arg>  Exclude property from the token before signing.
+          --token-key-id=<arg>            Override key-id in token.
+          --skip-validation               Do not validate the created token.
+          --private-key-file=<arg>        Read token signing key from file.
+          --secret=<arg>                  Symmetric secret for token signing.
+-v        --verbose                       Enable verbose output.
+-h        --help                          Show help and exit
 ```
 
 jwt-validate  \[\<opt\> ...\]

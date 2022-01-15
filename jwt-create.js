@@ -13,7 +13,8 @@ const readKeyFile = require('./read-key-file.js');
 const parseJwtToken = require('./parse-jwt-token.js');
 const getEcCurveName = require('./get-ec-curve-name.js');
 const jwtKeyParams = require('./data-jwt-key-params.js');
-	  
+const createJwt = require('./create-jwt.js');
+
 var context = {
 	verbose: false,
 	jwtConf: {},
@@ -61,10 +62,15 @@ var opt = ((new Optist())
 					 defaultValue: 'anonymous',
 					 optArgCb: ou.nonEmptyCb },
 				   { longName: 'token-property',
-					 description: 'Extra name:value pair to be included into a token.',
+					 description: 'Extra name:value pair to be included into tokens.',
 					 hasArg: true,
 					 multi: true,
 					 optArgCb: nameValuePairCb },
+				   { longName: 'exclude-token-property',
+					 description: 'Exclude property from the token before signing.',
+					 hasArg: true,
+					 multi: true,
+					 optArgCb: ou.nonEmptyCb },
 				   { longName: 'token-key-id',
 					 description: 'Override key-id in token.',
 					 hasArg: true,
@@ -90,6 +96,7 @@ var opt = ((new Optist())
 (function() {
 	context.verbose = opt.value('verbose');
 	context.jwtConf.property = opt.value('token-property');
+	context.jwtConf.excludeProperty = opt.value('exclude-token-property');
 	context.jwtConf.issuer = opt.value('token-issuer');
 	context.jwtConf.subject = opt.value('token-issuer');
 	context.jwtConf.ttl = opt.value('token-ttl');
@@ -250,11 +257,14 @@ var opt = ((new Optist())
 		context.jwtConf.property.forEach(function(p) {
 			a[p.name] = p.value;
 		});
-		let t = jwt.sign(a,
-						 (context.jwtConf.secret ?
-						  context.jwtConf.secret :
-						  context.jwtConf.privateKey),
-						 { algorithm: context.jwtConf.algorithm } );
+		context.jwtConf.excludeProperty.forEach(function(p) {
+			delete a[p];
+		});
+		let t = createJwt(context.jwtConf.algorithm,
+						  (context.jwtConf.secret ?
+						   context.jwtConf.secret :
+						   context.jwtConf.privateKey),
+						  a);
 		if (! t) {
 			throw new Error('token creation failed');
 		}
