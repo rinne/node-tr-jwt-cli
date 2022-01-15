@@ -186,6 +186,11 @@ token payload: {
   "jti": "10750195-9c67-4ffa-8add-8528ba064c57"
 }
 token signature blob length: 32 bytes
+
+$ jwt-parse --token='e30.e30.LQ'
+token header: {}
+token payload: {}
+token signature blob length: 1 bytes
 ```
 
 Author
