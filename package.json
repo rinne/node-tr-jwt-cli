@@ -1,6 +1,6 @@
 {
 	"name": "tr-jwt-cli",
-	"version": "0.9.6",
+	"version": "0.9.7",
 	"description": "JWT creation and validation CLI tool.",
 	"main": "index.js",
 	"scripts": {
@@ -42,6 +42,7 @@
 		"base64",
 		"ec",
 		"rsa",
+		"rsa-pss",
 		"HS256",
 		"HS384",
 		"HS512",

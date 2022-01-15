@@ -37,12 +37,10 @@ var opt = ((new Optist())
 				   { longName: 'token-issuer',
 					 description: 'Issuer name to be included into tokens.',
 					 hasArg: true,
-					 defaultValue: 'anonymous',
 					 optArgCb: ou.nonEmptyCb },
 				   { longName: 'token-subject',
 					 description: 'Subject name to be included into tokens.',
 					 hasArg: true,
-					 defaultValue: 'anonymous',
 					 optArgCb: ou.nonEmptyCb },
 				   { longName: 'token-property',
 					 description: 'Extra name:value pair to be included into tokens.',
@@ -85,8 +83,8 @@ var opt = ((new Optist())
 	context.verbose = opt.value('verbose');
 	context.jwtConf.property = opt.value('token-property');
 	context.jwtConf.excludeProperty = opt.value('exclude-token-property');
-	context.jwtConf.issuer = opt.value('token-issuer');
-	context.jwtConf.subject = opt.value('token-issuer');
+	context.jwtConf.issuer = opt.value('token-issuer') ? opt.value('token-issuer') : undefined;
+	context.jwtConf.subject = opt.value('token-subject') ? opt.value('token-subject') : undefined;
 	context.jwtConf.ttl = opt.value('token-ttl');
 	context.jwtConf.validate = !opt.value('skip-validation');
 	if (opt.value('secret')) {
@@ -236,13 +234,16 @@ var opt = ((new Optist())
 		context.jwtConf.keyId = opt.value('token-key-id');
 	}
 	try {
-		let a = {
-			iss: context.jwtConf.issuer,
-			sub: context.jwtConf.subject,
-			iat: Math.floor(Date.now() / 1000) - 60,
-			exp: Math.floor(Date.now() / 1000) + context.jwtConf.ttl,
-			jti: uuidv4()
-		};
+		let a = {};
+		if (context.jwtConf.issuer) {
+			a.iss = context.jwtConf.issuer;
+		}
+		if (context.jwtConf.subject) {
+			a.sub = context.jwtConf.subject;
+		}
+		a.iat = Math.floor(Date.now() / 1000) - 60,
+		a.exp = Math.floor(Date.now() / 1000) + context.jwtConf.ttl,
+		a.jti = uuidv4()
 		if (context.jwtConf.keyId) {
 			a.kid = context.jwtConf.keyId;
 		}

@@ -136,54 +136,52 @@ $ jwt-keygen --jwt-algorithm=ES256 --output=es256key
 
 $ cat es256key
 -----BEGIN EC PRIVATE KEY-----
-MHQCAQEEII6APc8+PB13Jr6KNl1jNCPER14yV2V7GUopEJA2DlR8oAcGBSuBBAAK
-oUQDQgAEd7QH6h68PVjh6SNLKQW6bMfCuFjnzGJJIE2BBtjAk5jUJOxQTtyPqhP9
-gGZC3uU4vlIODHLc4FVIc5PctG0MVQ==
+MHQCAQEEIGapL6ERXjSMjp9WQUEN884hDoDAlgiAW6jlSSVxt1qxoAcGBSuBBAAK
+oUQDQgAEj1v74/50oeF3MUMstBCDVwPu6mwLQvTKLdn3aO6BrFPfF4tzDvpAvHJD
+lomWoy5nkgPbvfJhghuHw90yBDR6sQ==
 -----END EC PRIVATE KEY-----
 
 $ cat es256key.pub
 -----BEGIN PUBLIC KEY-----
-MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEd7QH6h68PVjh6SNLKQW6bMfCuFjnzGJJ
-IE2BBtjAk5jUJOxQTtyPqhP9gGZC3uU4vlIODHLc4FVIc5PctG0MVQ==
+MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEj1v74/50oeF3MUMstBCDVwPu6mwLQvTK
+Ldn3aO6BrFPfF4tzDvpAvHJDlomWoy5nkgPbvfJhghuHw90yBDR6sQ==
 -----END PUBLIC KEY-----
 
 $ jwt-create --private-key-file=es256key
-eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhbm9ueW1vdXMiLCJzdWIiOiJhbm9ueW1vdXMiLCJpYXQiOjE2NDEzNjYzMTUsImV4cCI6MTY0MTM2OTk3NSwianRpIjoiYzA0NmVkYzEtYTRlYy00YzcyLWI3ZGQtNTYwNjVkYWI3NjBmIiwia2lkIjoiZ3lrd3N1Y2dkanJ3In0.MLZS-UNPC3KAE4k97j-axeV93y_yr1nwinG4opcWHf5R9HEtgQiCoSpB3_z8m3RHJg7kdvgKQ6pKKZ4nuk439A
+eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NDIyNDQ3NzYsImV4cCI6MTY0MjI0ODQzNiwianRpIjoiMzFkNTk2YjYtNjNkYy00NmY5LWI4NTktNmMxNWJkOGE5NWUxIiwia2lkIjoiZ2xkZG90dmlhcWZ3In0.8yofRLYLubbuMzdsBUaG_g7jYts9DfzbL_KMhDv3b8HnQ-BlPdqFYP7yLKARq-B6v_Yqb55TB6iynGulpcma5w
 
-$ jwt-validate --public-key-file=es256key.pub --token='eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhbm9ueW1vdXMiLCJzdWIiOiJhbm9ueW1vdXMiLCJpYXQiOjE2NDEzNjYzMTUsImV4cCI6MTY0MTM2OTk3NSwianRpIjoiYzA0NmVkYzEtYTRlYy00YzcyLWI3ZGQtNTYwNjVkYWI3NjBmIiwia2lkIjoiZ3lrd3N1Y2dkanJ3In0.MLZS-UNPC3KAE4k97j-axeV93y_yr1nwinG4opcWHf5R9HEtgQiCoSpB3_z8m3RHJg7kdvgKQ6pKKZ4nuk439A'
+$ jwt-validate --public-key-file=es256key.pub --token='eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NDIyNDQ3NzYsImV4cCI6MTY0MjI0ODQzNiwianRpIjoiMzFkNTk2YjYtNjNkYy00NmY5LWI4NTktNmMxNWJkOGE5NWUxIiwia2lkIjoiZ2xkZG90dmlhcWZ3In0.8yofRLYLubbuMzdsBUaG_g7jYts9DfzbL_KMhDv3b8HnQ-BlPdqFYP7yLKARq-B6v_Yqb55TB6iynGulpcma5w'
 Token successfully verified
 
-$ jwt-validate --public-key-file=es256key.pub --token='eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhbm9ueW1vdXMiLCJzdWIiOiJhbm9ueW1vdXMiLCJpYXQiOjE2NDEzNjYzMTUsImV4cCI6MTY0MTM2OTk3NSwianRpIjoiYzA0NmVkYzEtYTRlYy00YzcyLWI3ZGQtNTYwNjVkYWI3NjBmIiwia2lkIjoiZ3lrd3N1Y2dkanJ3In0.MLZS-UNPC3KAE4k97j-axeV93y_yr1nwinG4opcWHf5R9HEtgQiCoSpB3_z8m3RHJg7kdvgKQ6pKKZ4nuk439A' -v
+$ jwt-validate --public-key-file=es256key.pub --token='eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NDIyNDQ3NzYsImV4cCI6MTY0MjI0ODQzNiwianRpIjoiMzFkNTk2YjYtNjNkYy00NmY5LWI4NTktNmMxNWJkOGE5NWUxIiwia2lkIjoiZ2xkZG90dmlhcWZ3In0.8yofRLYLubbuMzdsBUaG_g7jYts9DfzbL_KMhDv3b8HnQ-BlPdqFYP7yLKARq-B6v_Yqb55TB6iynGulpcma5w' -v
 Token successfully verified
-Issued at 2022-01-05 07:05:15 UTC
-Expires at 2022-01-05 08:06:15 UTC
+Issued at 2022-01-15 11:06:16 UTC
+Expires at 2022-01-15 12:07:16 UTC
 token header: {
   "alg": "ES256",
   "typ": "JWT"
 }
 token payload: {
-  "iss": "anonymous",
-  "sub": "anonymous",
-  "iat": 1641366315,
-  "exp": 1641369975,
-  "jti": "c046edc1-a4ec-4c72-b7dd-56065dab760f",
-  "kid": "gykwsucgdjrw"
+  "iat": 1642244776,
+  "exp": 1642248436,
+  "jti": "31d596b6-63dc-46f9-b859-6c15bd8a95e1",
+  "kid": "glddotviaqfw"
 }
 
 $ jwt-create --secret-hex='666f6f' | jwt-validate --secret='foo'
 Token successfully verified
 
-$ jwt-create --secret-hex='666f6f' | jwt-parse
+$ jwt-create --secret-hex='666f6f' --token-issuer='abc' --token-subject='xyz' | jwt-parse
 token header: {
   "alg": "HS256",
   "typ": "JWT"
 }
 token payload: {
-  "iss": "anonymous",
-  "sub": "anonymous",
-  "iat": 1642241823,
-  "exp": 1642245483,
-  "jti": "10750195-9c67-4ffa-8add-8528ba064c57"
+  "iss": "abc",
+  "sub": "xyz",
+  "iat": 1642244881,
+  "exp": 1642248541,
+  "jti": "f7ee169d-c7d7-4c4b-ad93-1fe3e9994b81"
 }
 token signature blob length: 32 bytes
 
