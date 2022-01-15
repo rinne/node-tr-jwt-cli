@@ -37,10 +37,10 @@ is written to the file with `.pub` suffix.
 ### Options
 
 ```
-  -a <arg>  --jwt-algorithm=<arg>  JWT algorithm for the key pair.
-            --output=<arg>         Filename for the secret key.
-  -v        --verbose              Enable verbose output.
-  -h        --help                 Show help and exit
+-a <arg>  --jwt-algorithm=<arg>  JWT algorithm for the key pair.
+          --output=<arg>         Filename for the secret key.
+-v        --verbose              Enable verbose output.
+-h        --help                 Show help and exit
 ```
 
 
@@ -60,17 +60,17 @@ token as a numeric type.
 ### Options
 
 ```
-  -a <arg>  --jwt-algorithm=<arg>     Force JWT algorithm to be used.
-            --token-ttl=<arg>         Default validity time for tokens in seconds.
-            --token-issuer=<arg>      Issuer name to be included into tokens.
-            --token-subject=<arg>     Subject name to be included into tokens.
-            --token-property=<arg>    Extra name:value pair to be included into a token.
-            --token-key-id=<arg>      Override key-id in token.
-            --skip-validation         Do not validate the created token.
-            --private-key-file=<arg>  Read token signing key from file.
-            --secret=<arg>            Symmetric secret for token signing.
-  -v        --verbose                 Enable verbose output.
-  -h        --help                    Show help and exit
+-a <arg>  --jwt-algorithm=<arg>     Force JWT algorithm to be used.
+          --token-ttl=<arg>         Default validity time for tokens in seconds.
+          --token-issuer=<arg>      Issuer name to be included into tokens.
+          --token-subject=<arg>     Subject name to be included into tokens.
+          --token-property=<arg>    Extra name:value pair to be included into a token.
+          --token-key-id=<arg>      Override key-id in token.
+          --skip-validation         Do not validate the created token.
+          --private-key-file=<arg>  Read token signing key from file.
+          --secret=<arg>            Symmetric secret for token signing.
+-v        --verbose                 Enable verbose output.
+-h        --help                    Show help and exit
 ```
 
 jwt-validate  \[\<opt\> ...\]
@@ -85,17 +85,17 @@ does not validate.
 ### Options
 
 ```
-            --public-key-file=<arg>  Read token signature public key from file.
-            --secret=<arg>           Symmetric token signing secret.
-  -a <arg>  --jwt-algorithm=<arg>    Accept only a given JWT algorithm.
-            --strict                 Be strict!
-  -v        --verbose                Enable verbose output.
-            --token=<arg>            Token to be verified.
-  -h        --help                   Show help and exit
+          --public-key-file=<arg>  Read token signature public key from file.
+          --secret=<arg>           Symmetric token signing secret.
+-a <arg>  --jwt-algorithm=<arg>    Accept only a given JWT algorithm.
+          --strict                 Be strict!
+-v        --verbose                Enable verbose output.
+          --token=<arg>            Token to be verified.
+-h        --help                   Show help and exit
 ```
 
-Example
-=======
+Examples
+========
 
 ```
 $ jwt-keygen --jwt-algorithm=ES256 --output=es256key
