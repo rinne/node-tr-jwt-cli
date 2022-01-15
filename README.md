@@ -169,6 +169,23 @@ token payload: {
   "jti": "c046edc1-a4ec-4c72-b7dd-56065dab760f",
   "kid": "gykwsucgdjrw"
 }
+
+$ jwt-create --secret-hex='666f6f' | jwt-validate --secret='foo'
+Token successfully verified
+
+$ jwt-create --secret-hex='666f6f' | jwt-parse
+token header: {
+  "alg": "HS256",
+  "typ": "JWT"
+}
+token payload: {
+  "iss": "anonymous",
+  "sub": "anonymous",
+  "iat": 1642241823,
+  "exp": 1642245483,
+  "jti": "10750195-9c67-4ffa-8add-8528ba064c57"
+}
+token signature blob length: 32 bytes
 ```
 
 Author
