@@ -1,6 +1,6 @@
 {
 	"name": "tr-jwt-cli",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "JWT creation and validation CLI tool.",
 	"main": "index.js",
 	"scripts": {
