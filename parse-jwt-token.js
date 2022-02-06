@@ -33,7 +33,7 @@ function parseJwtToken(token) {
 	try {
 		r.tokenSignatureRaw = base64url.toBuffer(r.tokenSignature);
 	} catch (e) {
-		console.log(e);
+		errors.push(e);
 	}
 	if (errors.length > 0) {
 		r.errors = errors;
